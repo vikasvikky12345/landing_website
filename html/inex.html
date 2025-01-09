@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Slider with Gradient</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        /* Custom styles for the progress bar */
+        .progress-line {
+            height: 4px;
+            background: #e5e5e5;
+            position: relative;
+        }
+
+        .progress-line::before {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 0%;
+            background: #6c5ce7;
+            transition: width 1s linear;
+        }
+
+        .progress-line.active::before {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex items-center justify-center transition-colors duration-500">
+
+    <!-- Slider Container -->
+    <div class="w-full max-w-4xl">
+        <!-- Content Section -->
+        <div id="slider" class="relative bg-white shadow-lg rounded-lg overflow-hidden">
+            <!-- Slide Content -->
+            <div class="p-10 text-center">
+                <h1 id="slide-title" class="text-3xl font-bold text-gray-800">Title 1</h1>
+                <p id="slide-description" class="mt-4 text-gray-600">This is the description for the first slide.</p>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="flex items-center justify-between mt-6">
+            <!-- Previous Button -->
+            <button id="prev"
+                class="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center focus:outline-none hover:scale-110 transform transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
+            <!-- Progress Indicators -->
+            <div class="flex items-center gap-4">
+                <div id="progress1" class="progress-line w-10 rounded-full"></div>
+                <div id="progress2" class="progress-line w-10 rounded-full"></div>
+                <div id="progress3" class="progress-line w-10 rounded-full"></div>
+                <div id="progress4" class="progress-line w-10 rounded-full"></div>
+            </div>
+
+            <!-- Next Button -->
+            <button id="next"
+                class="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center focus:outline-none hover:scale-110 transform transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- GSAP Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const slides = [
+                {
+                    title: "Title 1",
+                    description: "This is the description for the first slide.",
+                    gradient: "from-yellow-200 via-pink-100 to-pink-300",
+                },
+                {
+                    title: "Title 2",
+                    description: "This is the description for the second slide.",
+                    gradient: "from-purple-200 via-pink-300 to-red-300",
+                },
+                {
+                    title: "Title 3",
+                    description: "This is the description for the third slide.",
+                    gradient: "from-green-200 via-blue-300 to-indigo-400",
+                },
+                {
+                    title: "Title 4",
+                    description: "This is the description for the fourth slide.",
+                    gradient: "from-gray-200 via-purple-300 to-pink-400",
+                },
+            ];
+
+            let currentIndex = 0;
+
+            const titleEl = document.getElementById("slide-title");
+            const descriptionEl = document.getElementById("slide-description");
+            const progressBars = [
+                document.getElementById("progress1"),
+                document.getElementById("progress2"),
+                document.getElementById("progress3"),
+                document.getElementById("progress4"),
+            ];
+            const prevBtn = document.getElementById("prev");
+            const nextBtn = document.getElementById("next");
+
+            const updateSlide = (index) => {
+                const { title, description, gradient } = slides[index];
+
+                // GSAP Animation
+                gsap.fromTo(
+                    [titleEl, descriptionEl],
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 0.5 }
+                );
+
+                // Update Content
+                titleEl.textContent = title;
+                descriptionEl.textContent = description;
+
+                // Update Progress Bar
+                progressBars.forEach((bar, idx) => {
+                    bar.classList.toggle("active", idx === index);
+                });
+
+                // Update Background Gradient
+                document.body.className = `h-screen flex items-center justify-center bg-gradient-to-r ${gradient} transition-colors duration-500`;
+            };
+
+            const nextSlide = () => {
+                currentIndex = (currentIndex + 1) % slides.length;
+                updateSlide(currentIndex);
+            };
+
+            const prevSlide = () => {
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                updateSlide(currentIndex);
+            };
+
+            prevBtn.addEventListener("click", prevSlide);
+            nextBtn.addEventListener("click", nextSlide);
+
+            // Auto-loop every 4 seconds
+            setInterval(nextSlide, 4000);
+
+            // Initialize the first slide
+            updateSlide(currentIndex);
+        });
+    </script>
+</body>
+
+</html>
